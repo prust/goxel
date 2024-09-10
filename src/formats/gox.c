@@ -766,7 +766,7 @@ ACTION_REGISTER(ACTION_save_as,
     .cfunc = a_save_as,
 )
 
-static void a_save(void)
+void a_save(void)
 {
     char default_save_path[1024];
     const char *path = goxel.image->path;

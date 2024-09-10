@@ -194,6 +194,14 @@ int gui_settings_popup(void *data)
     }
     gui_section_end();
 
+    if (gui_section_begin("Utils", GUI_SECTION_COLLAPSABLE)) {
+        if (gui_checkbox("Auto-Save", &goxel.enable_autosave,
+                         "Automatically save every three minutes")) {
+            settings_save();
+        }
+    }
+    gui_section_end();
+
     gui_popup_bottom_begin();
     ret = gui_button(_("OK"), 0, 0);
     gui_popup_bottom_end();
@@ -256,6 +264,13 @@ static int settings_ini_handler(void *user, const char *section,
             }
         }
     }
+    if (strcmp(section, "utils") == 0) {
+        if (strcmp(name, "autosave") == 0) {
+            if (strcmp(value, "true") == 0) {
+                goxel.enable_autosave = true;
+            }
+        }
+    }
     return 0;
 }
 
@@ -266,6 +281,7 @@ void settings_load(void)
     LOG_I("Read settings file: %s", path);
     arrfree(goxel.keymaps);
     goxel.emulate_three_buttons_mouse = 0;
+    goxel.enable_autosave = false;
     ini_parse(path, settings_ini_handler, NULL);
     actions_check_shortcuts();
     gesture_set_emulate_three_buttons_mouse(goxel.emulate_three_buttons_mouse);
@@ -347,6 +363,12 @@ void settings_save(void)
     fprintf(file, "\n");
     save_keymaps(file);
     fprintf(file, "\n");
+
+    if (goxel.enable_autosave) {
+        fprintf(file, "[utils]\n");
+        fprintf(file, "autosave=true\n");
+        fprintf(file, "\n");
+    }
 
     fclose(file);
 }

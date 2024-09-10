@@ -531,6 +531,7 @@ typedef struct goxel
     int        frame_count; // Global frames counter.
     double     frame_time;  // Clock time at beginning of the frame (sec)
     double     fps;         // Average fps.
+    double     autosave_time; // Clock time when last auto-saved
     bool       quit;        // Set to true to quit the application.
 
     int        view_effects; // EFFECT_WIREFRAME | EFFECT_GRID | EFFECT_EDGES
@@ -565,6 +566,9 @@ typedef struct goxel
 
     // Can be set to a key code (only KEY_LEFT_ALT is supported for now).
     int emulate_three_buttons_mouse;
+
+    // flag for auto-saving on an interval
+    bool enable_autosave;
 
     // Stb arrary of hints to show on top of the screen.
     hint_t *hints;
@@ -687,6 +691,8 @@ bool goxel_gesture3d(const gesture3d_t *gesture);
  * Call this if the keymaps array has changed.
  */
 void goxel_update_keymaps(void);
+
+void a_save(void);
 
 // Section: tests
 

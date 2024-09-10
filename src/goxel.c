@@ -511,6 +511,7 @@ void goxel_reset(void)
     image_delete(goxel.image);
     goxel.image = image_new();
     goxel.lang = "en";
+    goxel.autosave_time = sys_get_time();
 
     settings_load();
     goxel_update_keymaps();
@@ -598,6 +599,22 @@ void goxel_release_graphics(void)
     texture_delete(goxel.pick_fbo);
     goxel.pick_fbo = NULL;
     goxel.graphics_initialized = false;
+}
+
+/*
+ * Function: autosave_if_needed
+ * Auto-saves every 3 minutes if the auto-save setting is checked
+*/
+static void autosave_if_needed(void)
+{
+    if (!goxel.enable_autosave)
+      return;
+
+    double time_since_saved = goxel.frame_time - goxel.autosave_time;
+    if (time_since_saved > 3 * 60) {
+        a_save();
+        goxel.autosave_time = goxel.frame_time;
+    }
 }
 
 static void update_window_title(void)
@@ -694,6 +711,7 @@ int goxel_iter(const inputs_t *inputs)
     play_build_sound_if_needed();
     gesture3ds_iter();
     sound_iter();
+    autosave_if_needed();
     update_window_title();
 
     goxel.frame_count++;
